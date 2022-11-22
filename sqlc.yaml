@@ -1,0 +1,13 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "sql/queries/query.sql"
+    schema: "sql/schema/schema.sql"
+    gen:
+      go:
+        package: "simplebanksql"
+        out: "generated/sql/simplebanksql"
+        emit_prepared_queries: false
+        emit_interface: false
+        emit_exact_table_names: false
+        emit_json_tags: true
