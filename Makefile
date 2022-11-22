@@ -18,6 +18,9 @@ gen-sql:
 clean-sql:
 	rm -rf ./generated/*
 
+test:
+	go test -v -cover ./...
+
 .PHONY: migrate-up migrate-status migrate-down migrate-create  gen-sql clean-sql
 
 ## When building the application we have to pass the simplebank in docker postgres setup
