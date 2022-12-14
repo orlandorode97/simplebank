@@ -45,6 +45,9 @@ jobs:
 
     - name: Run migrations
       run: make migrate-up
+    
+    - name: Generate sqlc
+      run: make gen-sql
 
     - name: Test
       run: make test
