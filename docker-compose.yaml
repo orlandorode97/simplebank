@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15-alpine
+    volumes:
+      - "dbdata:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    environment:
+      - DB_SOURCE=postgres://root:secret@postgres:5432/postgres?sslmode=disable
+    depends_on:
+      - postgres
+    entrypoint: ["./wait-for", "postgres:5432", "--","./start.sh"]
+    command: ["./simplebank"]
+volumes:
+  dbdata:

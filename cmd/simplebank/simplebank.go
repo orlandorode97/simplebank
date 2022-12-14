@@ -1,5 +1,0 @@
-package simplebank
-
-func main() {
-
-}

@@ -14,7 +14,7 @@ END $$;
 
 CREATE TABLE "currencies" (
   "id" bigserial PRIMARY KEY,
-  "name" Currency NOT NULL
+  "name" Currency UNIQUE NOT NULL
 );
 
 CREATE TABLE "accounts" (
