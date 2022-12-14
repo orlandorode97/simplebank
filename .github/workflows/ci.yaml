@@ -43,6 +43,9 @@ jobs:
     - name: Installing goose
       run: go install github.com/pressly/goose/v3/cmd/goose@latest
 
+    - name: Installing sqlc
+      run: go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+
     - name: Run migrations
       run: make migrate-up
     
