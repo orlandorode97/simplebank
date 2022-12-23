@@ -4,7 +4,7 @@
 FROM golang:1.20-rc-alpine as builder 
 
 ## Install make command to build the project and other tools.
-RUN apk add g++ && apk add make && apk add wget
+RUN apk add g++ make wget gcc
 RUN go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
 
 ## Create a working directory for the container
