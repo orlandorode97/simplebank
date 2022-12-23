@@ -5,6 +5,7 @@ FROM golang:1.20-rc-alpine as builder
 
 ## Install make command to build the project and other tools.
 RUN apk add g++ && apk add make && apk add wget
+RUN go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
 
 ## Create a working directory for the container
 WORKDIR /app 
@@ -13,7 +14,6 @@ RUN wget https://github.com/eficode/wait-for/releases/download/v2.2.3/wait-for
 
 ## Copy all from the root of the project to the root of the working directory (/app)
 COPY . .
-
 ## Execute make build command to build the project
 RUN make build
 
