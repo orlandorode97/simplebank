@@ -5,8 +5,6 @@ FROM golang:1.20-rc-alpine as builder
 
 ## Install make command to build the project and other tools.
 RUN apk add g++ make wget gcc
-RUN go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
-
 ## Create a working directory for the container
 WORKDIR /app 
 RUN wget https://github.com/pressly/goose/releases/download/v3.7.0/goose_linux_x86_64
