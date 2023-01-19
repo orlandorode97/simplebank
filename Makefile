@@ -1,4 +1,5 @@
 DB_URL=postgres://root:secret@localhost:5432/postgres?sslmode=disable
+DB_AWS_URL=postgres://root:Jl6JYVWUunMzVnf3IlNN@simplebank.cmqllemktzud.us-east-2.rds.amazonaws.com:5432/postgres
 TEST_DB_URL=postgres://root:secret@localhost:5432/simplebank_test?sslmode=disable
 
 setup:
@@ -7,6 +8,9 @@ stop:
 	docker-compose down
 migrate-up:
 	goose -dir ${CURDIR}/sql/migrations/ -table schema_migrations postgres ${DB_URL} up
+
+migrate-aws-up:
+	goose -dir ${CURDIR}/sql/migrations/ -table schema_migrations postgres ${DB_AWS_URL} up
 
 migrate-test-up:
 	goose -dir ${CURDIR}/sql/migrations/ -table schema_migrations postgres ${TEST_DB_URL} up
