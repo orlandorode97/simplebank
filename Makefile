@@ -65,6 +65,8 @@ docker-connect-network: docker-network
 removes:
 	docker-compose down
 	docker rmi $$(docker images -q)
+set-envs:
+			aws secretsmanager get-secret-value --secret-id simplebank --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
 
 .PHONY: migrate-up migrate-status migrate-down migrate-create  gen-sql clean-sql
 
