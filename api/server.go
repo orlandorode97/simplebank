@@ -31,6 +31,8 @@ func NewServer(conf config.Config, store store.Store) (*Server, error) {
 	v1 := router.Group("/api/v1")
 
 	v1.POST("/login", server.login)
+
+	v1.GET("/healthz", server.serverHealthz)
 	server.addUserRoutes(v1)
 
 	v1.Use(authMiddleware(tokenMaker))

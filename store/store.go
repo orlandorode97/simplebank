@@ -9,6 +9,7 @@ import (
 
 // Stores provides all needed functional sql database
 type Store interface {
+	Ping() error
 	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
 	simplebanksql.Querier
 }
@@ -25,4 +26,8 @@ func NewSimpleBankDB(db *sql.DB) Store {
 		db:      db,
 		Queries: simplebanksql.New(db),
 	}
+}
+
+func (s *SimpleBankDB) Ping() error {
+	return s.db.Ping()
 }
