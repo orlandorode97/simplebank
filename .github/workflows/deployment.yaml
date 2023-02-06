@@ -44,7 +44,7 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
           docker push -a $REGISTRY/$REPOSITORY
       - name: Update kubectl config
-        run: aws eks update-config --name simplebank --region us-east-2
+        run: aws eks update-kubeconfig --name simplebank --region us-east-2
 
       - name: Deploy Amazon EKS
         run: |
