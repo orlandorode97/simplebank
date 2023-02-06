@@ -8,11 +8,17 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  deploy:
     name: Build image
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+           version: 'v1.26'
+        id: install
+
       - name: Checkout repo
         uses: actions/checkout@v3
 
@@ -35,5 +41,12 @@ jobs:
           REPOSITORY: simplebank 
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t latest .
+          docker push -a $REGISTRY/$REPOSITORY
+      - name: Deploy Amazon EKS
+        run: |
+          kubectl apply -f eks/aws_auth.yaml
+          kubectl apply -f eks/deployment.yaml
+          kubectl apply -f eks/service.yaml
+          kubectl apply -f eks/issuer.yaml
+          kubectl apply -f eks/ingress.yaml

@@ -26,4 +26,15 @@ func (s *Server) serverHealthz(ctx *gin.Context) {
 		Status:  http.StatusOK,
 		Message: "service is serving",
 	})
+
+	/*
+	   - Llenar telefono particular
+	   - Fecha de ingreso mm-dd-yyyy
+	   - Correo personal
+	   - antiguedad 1 año y 2 meses que estuve en Wizeline
+	   - Solicitar carta de antiguedad de mis seguros gastos mayores.
+	   - Reglar para determinar la suma asegurada (no llenar)
+	   - Salario bruto
+	   - Guadalajara, Jal 30 enero 2023
+	*/
 }
