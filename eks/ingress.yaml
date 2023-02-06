@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simplebank-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "api.simplebankgrpc.link"
+    http:
+      paths:
+      - pathType: Prefix
+        backend:
+          service:
+            name: simplebank-service
+            port:
+              number: 80
+        path: /
+  tls:
+  - hosts:
+    - api.simplebankgrpc.link
+    secretName: simplebank-cert

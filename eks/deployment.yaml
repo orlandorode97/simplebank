@@ -1,0 +1,22 @@
+apiVersion: apps/v1 ## Deployment object
+kind: Deployment
+metadata:
+  name: simplebank-deployment
+  labels:
+    app: simplebank-api
+spec:
+  replicas: 2 ## Number of the pods to run the same template
+  selector:
+    matchLabels:
+      app: simplebank-api
+  template:
+    metadata:
+      labels:
+        app: simplebank-api
+    spec:
+      containers:
+      - name: simplebank-api
+        image: 460459424810.dkr.ecr.us-east-2.amazonaws.com/simplebank:latest
+        imagePullPolicy: Always ## Pull always the latest version of the image
+        ports:
+        - containerPort: 8081
