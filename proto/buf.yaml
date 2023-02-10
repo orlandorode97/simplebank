@@ -1,0 +1,6 @@
+version: v1
+lint:
+  use:
+    - DEFAULT ## Adds accepted basic rule styles for standard Protobuf style
+  except:
+    - PACKAGE_VERSION_SUFFIX ## Avoid package version like laptops.v1, laptops.beta.v1

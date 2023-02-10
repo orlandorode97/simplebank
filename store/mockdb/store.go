@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
 	simplebanksql "github.com/orlandorode97/simple-bank/generated/sql/simplebanksql"
 	store "github.com/orlandorode97/simple-bank/store"
 )
@@ -94,6 +95,21 @@ func (m *MockStore) CreateEntry(ctx context.Context, arg simplebanksql.CreateEnt
 func (mr *MockStoreMockRecorder) CreateEntry(ctx, arg interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEntry", reflect.TypeOf((*MockStore)(nil).CreateEntry), ctx, arg)
+}
+
+// CreateSession mocks base method.
+func (m *MockStore) CreateSession(ctx context.Context, arg simplebanksql.CreateSessionParams) (simplebanksql.Session, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSession", ctx, arg)
+	ret0, _ := ret[0].(simplebanksql.Session)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSession indicates an expected call of CreateSession.
+func (mr *MockStoreMockRecorder) CreateSession(ctx, arg interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSession", reflect.TypeOf((*MockStore)(nil).CreateSession), ctx, arg)
 }
 
 // CreateTransfer mocks base method.
@@ -213,6 +229,21 @@ func (mr *MockStoreMockRecorder) GetEntry(ctx, id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEntry", reflect.TypeOf((*MockStore)(nil).GetEntry), ctx, id)
 }
 
+// GetSession mocks base method.
+func (m *MockStore) GetSession(ctx context.Context, id uuid.UUID) (simplebanksql.Session, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSession", ctx, id)
+	ret0, _ := ret[0].(simplebanksql.Session)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSession indicates an expected call of GetSession.
+func (mr *MockStoreMockRecorder) GetSession(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockStore)(nil).GetSession), ctx, id)
+}
+
 // GetTransfer mocks base method.
 func (m *MockStore) GetTransfer(ctx context.Context, id int64) (simplebanksql.Transfer, error) {
 	m.ctrl.T.Helper()
@@ -286,6 +317,20 @@ func (m *MockStore) ListTransfers(ctx context.Context, arg simplebanksql.ListTra
 func (mr *MockStoreMockRecorder) ListTransfers(ctx, arg interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransfers", reflect.TypeOf((*MockStore)(nil).ListTransfers), ctx, arg)
+}
+
+// Ping mocks base method.
+func (m *MockStore) Ping() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Ping")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Ping indicates an expected call of Ping.
+func (mr *MockStoreMockRecorder) Ping() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockStore)(nil).Ping))
 }
 
 // TransferTx mocks base method.

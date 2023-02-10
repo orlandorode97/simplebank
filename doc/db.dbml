@@ -1,0 +1,81 @@
+Project simplebank {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # Simple bank database
+    **markdown content here**
+  '''
+}
+
+Table accounts as A {
+  id bigserial [pk] // Primary key
+  owner varchar [not null, ref: > U.username, not null]
+  balance bigint [not null]
+  currency_id bigint [ref: > C.id, not null]
+  createad_at timestamptz [not null, default: `now()`]
+  
+  Indexes {
+    owner
+    (owner, currency_id) [unique]
+  }
+}
+
+Table entries as E {
+  id bigserial [pk]
+  account_id bigint [ref: > A.id, not null] // 1:M relationship accounts:entrites
+  amount bigint [not null, note: 'can be negative or positive']
+  createad_at timestamptz [not null, default: `now()`]
+  Indexes {
+    account_id
+  }
+}
+
+Table transfers as T {
+  id bigserial [pk]
+  from_account_id bigint [ref: > A.id, not null]
+  to_account_id bigint [ref: > A.id, not null]
+  amount bigint [not null, note: 'must be positive']
+  createad_at timestamptz [not null, default: `now()`]
+  
+  Indexes {
+    from_account_id
+    to_account_id
+    (from_account_id, to_account_id)
+  }
+  
+}
+
+Table Currencys as C {
+  id bigserial [pk]
+  currency Currency [not null]
+}
+
+Table users as U {
+  username varchar [pk, not null]
+  hashed_passord varchar [not null]
+  full_name  varchar [not null]
+  email varchar [unique, not null]
+  password_changed_at timestamptz [not null, default: '0001-01-01 00:00:00Z']
+  createad_at timestamptz [not null, default: `now()`]
+}
+
+Table sessions as S {
+  id uuid [pk]
+  username varchar [ref: > U.username, not null]
+  refresh_token varchar [not null]
+  user_agent varchar [not null]
+  client_ip varchar [not null]
+  is_blocked boolean [not null, default: false]
+  expires_at timestamptz [not null]
+  createad_at timestamptz [not null, default: `now()`]
+
+
+}
+
+Enum Currency {
+  USD
+  EUR
+  MXM
+  CAD
+  JPY
+}
+

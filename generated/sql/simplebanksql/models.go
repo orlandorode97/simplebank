@@ -8,6 +8,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Currencies string
@@ -74,6 +76,17 @@ type Entry struct {
 	// can be negative or positive
 	Amount     int64     `json:"amount"`
 	CreateadAt time.Time `json:"createad_at"`
+}
+
+type Session struct {
+	ID           uuid.UUID `json:"id"`
+	Username     string    `json:"username"`
+	RefreshToken string    `json:"refresh_token"`
+	UserAgent    string    `json:"user_agent"`
+	ClientIp     string    `json:"client_ip"`
+	IsBlocked    bool      `json:"is_blocked"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	CreateadAt   time.Time `json:"createad_at"`
 }
 
 type Transfer struct {
