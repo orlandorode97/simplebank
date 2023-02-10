@@ -33,7 +33,7 @@ migrate-create-%:
 gen-sql:
 	sqlc generate
 
-clean-sql:
+clean:
 	rm -rf ./generated/*
 
 test:
@@ -68,5 +68,15 @@ removes:
 set-envs:
 			aws secretsmanager get-secret-value --secret-id simplebank --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
 
-.PHONY: migrate-up migrate-status migrate-down migrate-create  gen-sql clean-sql
+build-db-docs:
+	dbdocs build doc/db.dbml
+
+proto-lint:
+	buf lint
+proto-fmt:
+	buf format -w
+gen-proto: clean
+	buf generate --template buf.go.yaml
+
+.PHONY: migrate-up migrate-status migrate-down migrate-create  gen-sql clean build-db-docs proto-fmt gen-proto proto-lint
 

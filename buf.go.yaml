@@ -1,0 +1,10 @@
+version: v1
+plugins:
+  - name: go ## This is the plugin protoc-go which creates the stubs (types, structs, etc)
+    out: generated
+    opt: paths=source_relative
+  - name: go-grpc ## This is the plugin protoc-go-grpc that generates the needed stubs (methods for both client and server)
+    out: generated
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
