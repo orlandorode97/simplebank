@@ -1,14 +1,15 @@
 syntax = "proto3";
 package simplebank;
 
-import "simplebank/users.proto";
 import "google/protobuf/timestamp.proto";
+import "simplebank/users.proto";
 
 option go_package = "github.com/orlandorode97/simplebank/generated/proto/simplebank";
 
 service SimplebankService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 }
 
 message CreateUserRequest {
@@ -34,4 +35,15 @@ message LoginResponse {
   string refresh_token = 4;
   google.protobuf.Timestamp refresh_token_expires_at = 5;
   User user = 6;
+}
+
+message UpdateUserRequest {
+  string username = 1;
+  optional string full_name = 2;
+  optional string email = 3;
+  optional string password = 4;
+}
+
+message UpdateUserResponse {
+  User user = 1;
 }

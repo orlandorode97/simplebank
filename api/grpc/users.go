@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/lib/pq"
 	simplebankpb "github.com/orlandorode97/simple-bank/generated/simplebank"
@@ -96,7 +97,7 @@ func (s *GRPCServer) Login(ctx context.Context, req *simplebankpb.LoginRequest) 
 		return nil, status.Errorf(codes.Internal, "unable to get incoming request metadata")
 	}
 
-	userAgentValues := md[metadataUsergAgentKey]
+	userAgentValues := md.Get(metadataUsergAgentKey)
 	if len(userAgentValues) == 0 {
 		return nil, status.Errorf(codes.Internal, "metadata user agent not provided")
 	}
@@ -136,6 +137,65 @@ func (s *GRPCServer) Login(ctx context.Context, req *simplebankpb.LoginRequest) 
 	}, nil
 }
 
+func (s *GRPCServer) UpdateUser(ctx context.Context, req *simplebankpb.UpdateUserRequest) (*simplebankpb.UpdateUserResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "UpdateUserRequest is empty")
+	}
+
+	if err := isUpdateUserReqValid(req); err != nil {
+		return nil, err
+	}
+
+	args := simplebanksql.UpdateUserParams{
+		Username: req.GetUsername(),
+		FullName: sql.NullString{
+			String: req.GetFullName(),
+			Valid:  req.FullName != nil,
+		},
+		Email: sql.NullString{
+			String: req.GetEmail(),
+			Valid:  req.Email != nil,
+		},
+	}
+
+	if req.Password != nil {
+		hashed, err := pkg.HashPassword(req.GetPassword())
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to hash password: %v", err)
+		}
+		args.HashedPassword = sql.NullString{
+			String: hashed,
+			Valid:  true,
+		}
+	}
+
+	if args.HashedPassword.Valid {
+		args.PasswordChangedAt = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		}
+	}
+
+	updateUser, err := s.store.UpdateUser(ctx, args)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, status.Errorf(codes.NotFound, "username not found: %v", err)
+		}
+
+		return nil, status.Errorf(codes.NotFound, "unable to update user: %v", err)
+	}
+
+	return &simplebankpb.UpdateUserResponse{
+		User: &simplebankpb.User{
+			Username:          updateUser.Username,
+			FullName:          updateUser.FullName,
+			Email:             updateUser.Email,
+			PasswordChangedAt: timestamppb.New(updateUser.PasswordChangedAt),
+			CreatedAt:         timestamppb.New(updateUser.CreateadAt),
+		},
+	}, nil
+}
+
 func isCreateUserReqValid(req *simplebankpb.CreateUserRequest) error {
 	createUserValidator := validations.NewCreateUserValidator(req)
 	return validations.BuildErrDetails(createUserValidator, "CreateUserRequest error")
@@ -144,4 +204,9 @@ func isCreateUserReqValid(req *simplebankpb.CreateUserRequest) error {
 func isLoginRequestValid(req *simplebankpb.LoginRequest) error {
 	loginValidator := validations.NewLoginValidator(req)
 	return validations.BuildErrDetails(loginValidator, "LoginRequest error")
+}
+
+func isUpdateUserReqValid(req *simplebankpb.UpdateUserRequest) error {
+	updateUserValidator := validations.NewUpdateUserValidator(req)
+	return validations.BuildErrDetails(updateUserValidator, "UpdateUserRequest error")
 }
