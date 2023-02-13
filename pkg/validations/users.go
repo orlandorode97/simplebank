@@ -31,3 +31,17 @@ func NewLoginValidator(req *simplebankpb.LoginRequest) *LoginValidator {
 		Password: req.Password,
 	}
 }
+
+type UpdateUserValidator struct {
+	FullName string `validate:"omitempty"`
+	Email    string `validate:"omitempty,email"`
+	Password string `validate:"omitempty"`
+}
+
+func NewUpdateUserValidator(req *simplebankpb.UpdateUserRequest) *UpdateUserValidator {
+	return &UpdateUserValidator{
+		FullName: req.GetFullName(),
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
+	}
+}

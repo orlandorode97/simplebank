@@ -55,7 +55,10 @@ func main() {
 		log.Fatalf("unable to create grpc server: %v", err)
 	}
 
-	server := grpc.NewServer()
+	opts := []grpc.ServerOption{
+		grpc.UnaryInterceptor(grpcServer.UnaryInterceptor()),
+	}
+	server := grpc.NewServer(opts...)
 	reflection.Register(server)
 	simplebankpb.RegisterSimplebankServiceServer(server, grpcServer)
 
