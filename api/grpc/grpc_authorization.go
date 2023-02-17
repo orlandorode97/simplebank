@@ -21,7 +21,7 @@ var protectedRPCs = map[string]bool{
 	updateUserRPC: true,
 }
 
-func (s *GRPCServer) UnaryInterceptor() grpc.UnaryServerInterceptor {
+func (s *GRPCServer) AuthInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		_, ok := protectedRPCs[info.FullMethod]
 		if ok {

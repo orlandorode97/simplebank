@@ -5,6 +5,7 @@ import (
 	simplebankpb "github.com/orlandorode97/simple-bank/generated/simplebank"
 	"github.com/orlandorode97/simple-bank/pkg/token"
 	"github.com/orlandorode97/simple-bank/store"
+	"go.uber.org/zap"
 )
 
 type GRPCServer struct {
@@ -12,9 +13,10 @@ type GRPCServer struct {
 	store      store.Store
 	config     config.Config
 	tokenMaker token.Maker
+	logger     *zap.SugaredLogger
 }
 
-func NewServer(conf config.Config, store store.Store) (*GRPCServer, error) {
+func NewServer(conf config.Config, store store.Store, logger *zap.SugaredLogger) (*GRPCServer, error) {
 	tokenMaker, err := token.NewPasetoMaker(conf.SymmetricKey)
 	if err != nil {
 		return nil, err
@@ -24,5 +26,6 @@ func NewServer(conf config.Config, store store.Store) (*GRPCServer, error) {
 		store:      store,
 		config:     conf,
 		tokenMaker: tokenMaker,
+		logger:     logger,
 	}, nil
 }

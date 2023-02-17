@@ -15,6 +15,7 @@ import (
 	"github.com/orlandorode97/simple-bank/store"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -34,6 +35,10 @@ func main() {
 	httpAddr := viper.GetString("http-addr")
 	grpcAddr := viper.GetString("grpc-addr")
 
+	logger := zap.NewExample()
+	suggar := logger.Sugar()
+
+	defer logger.Sync()
 	conf, err := config.LoadConfig(".")
 	if err != nil {
 		log.Fatal(err)
@@ -50,13 +55,16 @@ func main() {
 		log.Fatalf("unable to create http server: %v", err)
 	}
 
-	grpcServer, err := simplebankgrpc.NewServer(conf, store)
+	grpcServer, err := simplebankgrpc.NewServer(conf, store, suggar)
 	if err != nil {
 		log.Fatalf("unable to create grpc server: %v", err)
 	}
 
 	opts := []grpc.ServerOption{
-		grpc.UnaryInterceptor(grpcServer.UnaryInterceptor()),
+		grpc.ChainUnaryInterceptor(
+			grpcServer.AuthInterceptor(),
+			grpcServer.LoggerInterceptor(),
+		),
 	}
 	server := grpc.NewServer(opts...)
 	reflection.Register(server)
