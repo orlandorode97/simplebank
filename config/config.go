@@ -12,6 +12,11 @@ type Config struct {
 	SymmetricKey         string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	TokenDuration        time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	TokenRefreshDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
+	Environment          string        `mapstructure:"ENVIRONMENT"`
+	RedisAddr            string        `mapstructure:"REDIS_ADDRESS"`
+	GmailName            string        `mapstructure:"GMAIL_NAME"`
+	GmailAddress         string        `mapstructure:"GMAIL_ADDRESS"`
+	GmailPassword        string        `mapstructure:"GMAIL_PASSWORD"`
 }
 
 func LoadConfig(path string) (conf Config, err error) {
