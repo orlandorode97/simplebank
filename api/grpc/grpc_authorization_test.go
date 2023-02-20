@@ -175,7 +175,7 @@ func TestUnaryInterceptor(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			ctx := context.Background()
 			ctx = metadata.NewIncomingContext(ctx, tc.metadata)
-			_, err := server.UnaryInterceptor()(ctx, tc.req, tc.info, tc.handler)
+			_, err := server.AuthInterceptor()(ctx, tc.req, tc.info, tc.handler)
 			resp, ok := status.FromError(err)
 			if !ok {
 				t.Fatal(err)

@@ -78,5 +78,8 @@ proto-fmt:
 gen-proto: clean
 	buf generate --template buf.go.yaml
 
-.PHONY: migrate-up migrate-status migrate-down migrate-create  gen-sql clean build-db-docs proto-fmt gen-proto proto-lint
+docker-redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
+
+.PHONY: migrate-up migrate-status migrate-down migrate-create  gen-sql clean build-db-docs proto-fmt gen-proto proto-lint docker-redis
 

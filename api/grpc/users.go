@@ -6,11 +6,14 @@ import (
 	"errors"
 	"time"
 
+	"github.com/hibiken/asynq"
 	"github.com/lib/pq"
 	simplebankpb "github.com/orlandorode97/simple-bank/generated/simplebank"
 	"github.com/orlandorode97/simple-bank/generated/sql/simplebanksql"
 	"github.com/orlandorode97/simple-bank/pkg"
 	"github.com/orlandorode97/simple-bank/pkg/validations"
+	"github.com/orlandorode97/simple-bank/store"
+	"github.com/orlandorode97/simple-bank/workers"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
@@ -41,7 +44,24 @@ func (s *GRPCServer) CreateUser(ctx context.Context, req *simplebankpb.CreateUse
 		Email:          req.Email,
 	}
 
-	user, err := s.store.CreateUser(ctx, args)
+	result, err := s.store.CreateUserTx(ctx, store.CreateUserTxParams{
+		CreateUserParams: args,
+		AfterCreat: func(user simplebanksql.User) error {
+			sendVerificationOpts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10 * time.Second),
+				asynq.Queue(workers.QueueCritial),
+			}
+
+			// Send verification-email
+			return s.taskDistributor.SendVerifyEmail(ctx, &workers.PayloadSendVerifyEmail{
+				Username: user.Username,
+				Email:    user.Email,
+			}, sendVerificationOpts...)
+
+		},
+	})
+
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
@@ -49,15 +69,17 @@ func (s *GRPCServer) CreateUser(ctx context.Context, req *simplebankpb.CreateUse
 				return nil, status.Errorf(codes.AlreadyExists, "user already created: %v", err)
 			}
 		}
+
+		return nil, status.Errorf(codes.Internal, "unable to create user: %v", err)
 	}
 
 	return &simplebankpb.CreateUserResponse{
 		User: &simplebankpb.User{
-			Username:          user.Username,
-			FullName:          user.FullName,
-			Email:             user.Email,
-			PasswordChangedAt: timestamppb.New(user.PasswordChangedAt),
-			CreatedAt:         timestamppb.New(user.CreateadAt),
+			Username:          result.User.Username,
+			FullName:          result.User.FullName,
+			Email:             result.User.Email,
+			PasswordChangedAt: timestamppb.New(result.User.PasswordChangedAt),
+			CreatedAt:         timestamppb.New(result.User.CreateadAt),
 		},
 	}, nil
 }
