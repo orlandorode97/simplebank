@@ -32,7 +32,7 @@ type RedistTaskProcessor struct {
 // NewRedistTaskProcessor returns a *TaskProcessor
 func NewRedistTaskProcessor(r asynq.RedisConnOpt, store store.Store, logger *zap.SugaredLogger, sender mail.EmailSender) TaskProcessor {
 
-	tlp = template.Must(template.ParseFiles("templates/verification_email.go"))
+	tlp = template.Must(template.ParseFiles("templates/verification_email.gohtml"))
 
 	taskProcessor := &RedistTaskProcessor{
 		store:  store,
