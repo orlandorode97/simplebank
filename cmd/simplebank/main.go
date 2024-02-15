@@ -107,6 +107,7 @@ func main() {
 	}()
 
 	log.Printf("Serving http server: %v", httpAddr)
+	
 	if err := httpServer.Listen(httpAddr); err != nil {
 		log.Fatalf("unable to start http server: %v", err)
 	}
