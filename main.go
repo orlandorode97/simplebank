@@ -13,6 +13,7 @@ type User struct {
 	Age            uint8      `validate:"gte=0,lte=101"`
 	Email          string     `validate:"required,email"`
 	FavouriteColor string     `validate:"iscolor"`                // alias for 'hexcolor|rgb|rgba|hsl|hsla'
+	// I don't remember writing this code xd
 	Addresses      []*Address `validate:"required,dive,required"` // a person can have a home and cottage...
 }
 
