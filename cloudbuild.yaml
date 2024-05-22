@@ -1,1 +1,23 @@
-name: Orlando
+logsBucket: "gs://omg-build-logs"
+timeout: 900s
+substitutions:
+  _NODE_BUILD_IMAGE: "us-docker.pkg.dev/omg-img/ordermygear/nodejs-build:v20.12.2-0"
+steps:
+  - id: "yarn_install"
+    name: "${_NODE_BUILD_IMAGE}"
+    args: ["/bin/bash", "-c", "yarn install"]
+  - id: "yarn_test"
+    name: "${_NODE_BUILD_IMAGE}"
+    args: ["/bin/bash", "-c", "set -o pipefail && yarn test:coverage | tee coverage_jest.txt"]
+  - id: "code_coverage_tracker"
+    name: "us-docker.pkg.dev/omg-img/ordermygear/code-coverage:v6-0"
+    args:
+      - "jest"
+      - "--repo-name=${REPO_NAME}"
+      - "--branch-name=${BRANCH_NAME}"
+      - "--commit-sha=${COMMIT_SHA}"
+      - "--input-coverage=coverage_jest.txt"
+      - "--output=code_coverage.jsonl"
+  - id: "code_coverage_upload"
+    name: "gcr.io/cloud-builders/gsutil"
+    args: ["cp", "code_coverage.jsonl", "gs://omg-build-code-coverage/node/${REPO_NAME}/${COMMIT_SHA}.jsonl"]
